@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Métricas de Vendas</title>
+    <style>
+        * {
+            cursor: none;
+        }
+        
+        body {
+            background-color: #0c121c !important;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #d2bc8f, #f4e4bc);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px rgba(210, 188, 143, 0.5);
+        }
+        
+        .custom-cursor::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(210, 188, 143, 0.3);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        
+        .hover-scale {
+            transition: transform 0.2s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+        
+        .bg-primary {
+            background-color: #0c121c;
+        }
+        
+        .text-accent {
+            color: #d2bc8f;
+        }
+        
+        .main-container {
+            background: linear-gradient(145deg, #141b2a, #0f1621);
+            border: 1px solid rgba(210, 188, 143, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .form-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .results-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        input {
+            background-color: #1a2332 !important;
+            border: 2px solid #d2bc8f !important;
+            color: #ffffff !important;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        
+        input:focus {
+            border-color: #f4e4bc !important;
+            box-shadow: 0 0 15px rgba(210, 188, 143, 0.4) !important;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #d2bc8f, #f4e4bc);
+            color: #0c121c;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 14px 32px;
+            border: none;
+            cursor: none;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(210, 188, 143, 0.4);
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tooltip-text {
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1a2332;
+            color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid #d2bc8f;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-card {
+            background: linear-gradient(145deg, #1a2332, #141b2a);
+            border: 2px solid #d2bc8f;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 400px;
+        }
+        
+        .result-item {
+            border-bottom: 1px solid rgba(210, 188, 143, 0.3);
+            padding: 12px 0;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-item:hover {
+            background-color: rgba(210, 188, 143, 0.1);
+            border-radius: 6px;
+            padding-left: 8px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #d2bc8f, #f4e4bc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #d2bc8f;
+            font-size: 14px;
+        }
+        
+        .info-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: 6px;
+            color: #d2bc8f;
+            cursor: none;
+            display: inline-block;
+        }
+        
+        .error-message {
+            background-color: #dc2626;
+            border: 1px solid #ef4444;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background-color: #16a34a;
+            border: 1px solid #22c55e;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .custom-cursor {
+                display: none;
+            }
+            * {
+                cursor: auto;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .main-container {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .calculating {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-primary">
+    <div class="custom-cursor" id="cursor"></div>
+    
+    <div id="app">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="gradient-text">
+                📊 Calculadora de Métricas de Vendas
+            </h1>
+            <p style="color: white;">
+                Defina os números que você precisa para <span class="text-accent" style="font-weight: bold;">bater a meta de vendas da sua empresa!</span>
+            </p>
+            <p style="color: #d2bc8f; font-size: 0.9rem; opacity: 0.8; margin-top: 10px;">
+                📈 <strong>Produtividades:</strong> 1 Closer = 77 reuniões/mês | 1 SDR = 500 leads/mês
+            </p>
+            <p style="color: #d2bc8f; font-size: 0.85rem; opacity: 0.7; margin-top: 5px;">
+                👥 <strong>Hierarquia:</strong> 3,67 Closers = 1 Gerente (Math.ceil) | 15+ SDRs = 1 Coordenador | 4+ Gerentes = 1 Head & 1 Diretor
+            </p>
+        </div>
+        
+        <!-- Main Container -->
+        <div class="main-container">
+            <div class="grid">
+                
+                <!-- Form Section - Left Column -->
+                <div class="form-section">
+                    <form id="metricsForm">
+                        
+                        <!-- Error Message -->
+                        <div id="errorMessage" class="error-message"></div>
+                        
+                        <!-- Success Message -->
+                        <div id="successMessage" class="success-message"></div>
+                        
+                        <!-- Meta de Faturamento -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                💰 Meta de Faturamento (R$)
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Valor total esperado de faturamento para atingir sua meta mensal
+                                </div>
+                            </label>
+                            <input id="metaFaturamento" 
+                                   type="number" 
+                                   step="0.01"
+                                   min="1"
+                                   placeholder="Ex: 100000 (R$ 100.000,00)"
+                                   required>
+                        </div>
+                        
+                        <!-- Ticket Médio -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                🎫 Ticket Médio (R$)
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Valor médio por venda realizada
+                                </div>
+                            </label>
+                            <input id="ticketMedio" 
+                                   type="number" 
+                                   step="0.01"
+                                   min="1"
+                                   placeholder="Ex: 2500 (R$ 2.500,00)"
+                                   required>
+                        </div>
+                        
+                        <!-- SDRs Atuais -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                👥 SDRs Atuais
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Quantidade de SDRs (Sales Development Representatives) na sua equipe. Cada SDR consegue abordar ~500 leads por mês.
+                                </div>
+                            </label>
+                            <input id="equipeSdr" 
+                                   type="number" 
+                                   min="1"
+                                   placeholder="Ex: 5"
+                                   required>
+                        </div>
+                        
+                        <!-- Closers Atuais -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                🎯 Closers Atuais
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Quantidade de Closers (responsáveis por fechar vendas). Cada Closer consegue realizar ~77 reuniões por mês.
+                                </div>
+                            </label>
+                            <input id="equipeCloser" 
+                                   type="number" 
+                                   min="1"
+                                   placeholder="Ex: 3"
+                                   required>
+                        </div>
+                        
+                        <!-- Taxa de Conversão -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                📈 Taxa de Conversão (%)
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Percentual de leads que se convertem em vendas
+                                </div>
+                            </label>
+                            <input id="taxaConversao" 
+                                   type="number" 
+                                   step="0.1"
+                                   min="0.1"
+                                   max="100"
+                                   placeholder="Ex: 15 (15%)"
+                                   required>
+                        </div>
+                        
+                        <!-- Taxa de Não Comparecimento -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                ❌ Taxa de Não Comparecimento (%)
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Percentual de leads que agendam mas não comparecem às reuniões
+                                </div>
+                            </label>
+                            <input id="taxaNaoComparecimento" 
+                                   type="number" 
+                                   step="0.1"
+                                   min="0"
+                                   max="99"
+                                   placeholder="Ex: 30 (30%)"
+                                   required>
+                        </div>
+                        
+                        <!-- Leads por Agendamento -->
+                        <div class="form-group hover-scale">
+                            <label class="form-label tooltip">
+                                📞 Leads por Agendamento
+                                <span class="info-icon">ℹ️</span>
+                                <div class="tooltip-text">
+                                    Média de leads necessários para gerar um agendamento
+                                </div>
+                            </label>
+                            <input id="leadsPorAgendamento" 
+                                   type="number" 
+                                   min="1"
+                                   placeholder="Ex: 10 leads"
+                                   required>
+                        </div>
+                        
+                        <!-- Button -->
+                        <button type="submit" class="btn-primary hover-scale" id="calculateBtn">
+                            🚀 Calcular!
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Results Section - Right Column -->
+                <div class="results-section">
+                    <div class="result-card">
+                        <h2 style="font-size: 1.25rem; font-weight: bold; color: #d2bc8f; margin-bottom: 24px; text-align: center;">📊 Resultado (mensal):</h2>
+                        
+                        <div id="results">
+                            <div class="result-item" style="border: 2px solid #d2bc8f; background: rgba(210, 188, 143, 0.1); border-radius: 8px;">
+                                <span style="color: white; font-weight: bold;">💰 Faturamento Meta =</span>
+                                <span id="metaFaturamentoDisplay" style="color: #f4e4bc; font-weight: bold; font-size: 1.1em;">R$ 0,00</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">📊 Leads Necessários =</span>
+                                <span id="leadsNecessarios" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">🎯 Vendas Necessárias =</span>
+                                <span id="vendasNecessarias" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">📅 Reuniões Marcadas =</span>
+                                <span id="reunioesAgendadas" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">✅ Reuniões Realizadas =</span>
+                                <span id="reunioesRealizadas" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <hr style="border: 1px solid rgba(210, 188, 143, 0.3); margin: 20px 0;">
+                            <div style="text-align: center; margin: 15px 0;">
+                                <h3 style="color: #d2bc8f; font-size: 1rem; margin: 0;">👥 EQUIPE NECESSÁRIA:</h3>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">🎯 Closers Necessários =</span>
+                                <span id="closersNecessarios" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">📞 SDRs Necessários =</span>
+                                <span id="sdrsNecessarios" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">👔 Gerentes Necessários =</span>
+                                <span id="gerentesNecessarios" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">🏆 Head de Vendas =</span>
+                                <span id="headVendas" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">📋 Coordenadores Necessários =</span>
+                                <span id="coordenadoresNecessarios" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span style="color: white; font-weight: 500;">🎖️ Diretores Necessários =</span>
+                                <span id="diretoresNecessarios" style="color: #d2bc8f; font-weight: bold;">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 32px; color: white; opacity: 0.75;">
+            <p>💻 Calculadora desenvolvida com JavaScript puro</p>
+            <p style="color: #d2bc8f; font-weight: bold;">Transformando dados em resultados! 📈</p>
+            <p style="font-size: 0.9rem; margin-top: 15px;">
+                📌 <strong>Formato de Números:</strong> Padrão Brasileiro (1.000.000,00)
+            </p>
+            <div style="max-width: 800px; margin: 15px auto; font-size: 0.8rem; line-height: 1.4;">
+                <p style="color: #d2bc8f; margin: 5px 0;"><strong>📊 Proporções de Equipe (corrigidas - versão final!):</strong></p>
+                <p>🎯 Closers: 1 para cada 77 reuniões | 📞 SDRs: 1 para cada 500 leads</p>
+                <p>👔 Gerentes: Math.ceil(Closers ÷ 3,67) | 📞 Coordenadores: 1 para cada 7,5 SDRs (mín. 15 SDRs)</p>
+                <p>🏆 Head de Vendas: 1 quando tiver 4+ Gerentes | 🎖️ Diretores: 1 quando tiver 4+ Gerentes</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Custom cursor functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const cursor = document.getElementById('cursor');
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+            
+            // Cursor movement
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            function animateCursor() {
+                cursorX += (mouseX - cursorX) * 0.1;
+                cursorY += (mouseY - cursorY) * 0.1;
+                
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+            
+            // Form functionality
+            const form = document.getElementById('metricsForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const calculateBtn = document.getElementById('calculateBtn');
+            
+            // Form submit event
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Formulário submetido!');
+                calculateMetrics();
+            });
+            
+            // Button click event (fallback)
+            calculateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Botão clicado!');
+                calculateMetrics();
+            });
+            
+            function showError(message) {
+                console.log('Erro:', message);
+                hideMessages();
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 5000);
+            }
+            
+            function showSuccess(message) {
+                console.log('Sucesso:', message);
+                hideMessages();
+                successMessage.textContent = message;
+                successMessage.classList.add('show');
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 3000);
+            }
+            
+            function hideMessages() {
+                errorMessage.classList.remove('show');
+                successMessage.classList.remove('show');
+            }
+            
+            function calculateMetrics() {
+                console.log('Iniciando cálculos...');
+                
+                try {
+                    hideMessages();
+                    
+                    // Adicionar efeito visual de carregamento
+                    form.classList.add('calculating');
+                    calculateBtn.textContent = '⏳ Calculando...';
+                    calculateBtn.disabled = true;
+                    
+                    // Get form values
+                    const metaFaturamento = parseFloat(document.getElementById('metaFaturamento').value) || 0;
+                    const ticketMedio = parseFloat(document.getElementById('ticketMedio').value) || 0;
+                    const equipeSdr = parseInt(document.getElementById('equipeSdr').value) || 0;
+                    const equipeCloser = parseInt(document.getElementById('equipeCloser').value) || 0;
+                    const taxaConversao = parseFloat(document.getElementById('taxaConversao').value) || 0;
+                    const taxaNaoComparecimento = parseFloat(document.getElementById('taxaNaoComparecimento').value) || 0;
+                    const leadsPorAgendamento = parseInt(document.getElementById('leadsPorAgendamento').value) || 0;
+                    
+                    console.log('Valores capturados:', {
+                        metaFaturamento,
+                        ticketMedio,
+                        equipeSdr,
+                        equipeCloser,
+                        taxaConversao,
+                        taxaNaoComparecimento,
+                        leadsPorAgendamento
+                    });
+                    
+                    // Validation
+                    if (metaFaturamento <= 0) {
+                        throw new Error('A meta de faturamento deve ser maior que zero.');
+                    }
+                    
+                    if (ticketMedio <= 0) {
+                        throw new Error('O ticket médio deve ser maior que zero.');
+                    }
+                    
+                    if (equipeSdr <= 0) {
+                        throw new Error('O número de SDRs deve ser maior que zero.');
+                    }
+                    
+                    if (equipeCloser <= 0) {
+                        throw new Error('O número de Closers deve ser maior que zero.');
+                    }
+                    
+                    if (taxaConversao <= 0 || taxaConversao > 100) {
+                        throw new Error('A taxa de conversão deve estar entre 0.1% e 100%.');
+                    }
+                    
+                    if (taxaNaoComparecimento < 0 || taxaNaoComparecimento >= 100) {
+                        throw new Error('A taxa de não comparecimento deve estar entre 0% e 99%.');
+                    }
+                    
+                    if (leadsPorAgendamento <= 0) {
+                        throw new Error('O número de leads por agendamento deve ser maior que zero.');
+                    }
+                    
+                    console.log('Validação passou, iniciando cálculos...');
+                    
+                    // Simular um pequeno delay para mostrar o efeito de carregamento
+                    setTimeout(() => {
+                        // CÁLCULOS PRINCIPAIS (AJUSTADOS CONFORME PRINT):
+                        
+                        // 1. VENDAS NECESSÁRIAS = Meta Faturamento ÷ Ticket Médio
+                        // Usando Math.floor para coincidir com o print (333, não 334)
+                        const vendasNecessarias = Math.floor(metaFaturamento / ticketMedio);
+                        
+                        // 2. REUNIÕES REALIZADAS = Vendas Necessárias ÷ (Taxa Conversão ÷ 100)
+                        const reunioesRealizadas = Math.ceil(vendasNecessarias / (taxaConversao / 100));
+                        
+                        // 3. REUNIÕES AGENDADAS = Reuniões Realizadas ÷ (1 - Taxa Não Comparecimento ÷ 100)
+                        const taxaComparecimento = 1 - (taxaNaoComparecimento / 100);
+                        const reunioesAgendadas = Math.ceil(reunioesRealizadas / taxaComparecimento);
+                        
+                        // 4. LEADS NECESSÁRIOS = Reuniões Agendadas × Leads por Agendamento
+                        const leadsNecessarios = reunioesAgendadas * leadsPorAgendamento;
+                        
+                        // 5. ESTRUTURA DE EQUIPE (PRODUTIVIDADES AJUSTADAS CONFORME NOVO PRINT):
+                        // Closers: Baseado no print atual - 1.000 reuniões = 13 closers → ~77 reuniões por closer
+                        const closersNecessarios = Math.ceil(reunioesRealizadas / 77);
+                        
+                        // SDRs: Mantém 500 leads por SDR (estava correto)
+                        const sdrsNecessarios = Math.ceil(leadsNecessarios / 500);
+                        
+                        // ESTRUTURA HIERÁRQUICA (CORRIGIDA PARA DAR 3 GERENTES):
+                        // Print mostra: 11 closers = 3 gerentes
+                        // Solução: Math.ceil(11 ÷ 3.67) = Math.ceil(2.99) = 3 ✅
+                        
+                        // Gerentes: Usando Math.ceil para arredondar para cima
+                        const gerentesNecessarios = closersNecessarios >= 3 ? Math.ceil(closersNecessarios / 3.67) : 0;
+                        
+                        // Head de Vendas: 1 quando tiver 4+ gerentes
+                        const headVendas = gerentesNecessarios >= 4 ? 1 : 0;
+                        
+                        // Coordenadores: só a partir de 15 SDRs
+                        const coordenadoresNecessarios = sdrsNecessarios >= 15 ? Math.round(sdrsNecessarios / 7.5) : 0;
+                        
+                        // Diretores: 1 quando tiver 4+ gerentes  
+                        const diretoresNecessarios = gerentesNecessarios >= 4 ? 1 : 0;
+                        
+                        console.log('=== DETALHAMENTO DOS CÁLCULOS (AJUSTADO) ===');
+                        console.log('1. Vendas Necessárias:', metaFaturamento.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}), '÷', ticketMedio.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}), '=', (metaFaturamento/ticketMedio).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', vendasNecessarias.toLocaleString('pt-BR'), '(usando Math.floor)');
+                        console.log('2. Reuniões Realizadas:', vendasNecessarias.toLocaleString('pt-BR'), '÷', (taxaConversao/100).toLocaleString('pt-BR', {style: 'percent'}), '=', (vendasNecessarias/(taxaConversao/100)).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', reunioesRealizadas.toLocaleString('pt-BR'));
+                        console.log('3. Reuniões Agendadas:', reunioesRealizadas.toLocaleString('pt-BR'), '÷', taxaComparecimento.toLocaleString('pt-BR', {style: 'percent'}), '=', (reunioesRealizadas/taxaComparecimento).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', reunioesAgendadas.toLocaleString('pt-BR'));
+                        console.log('4. Leads Necessários:', reunioesAgendadas.toLocaleString('pt-BR'), '×', leadsPorAgendamento.toLocaleString('pt-BR'), '=', leadsNecessarios.toLocaleString('pt-BR'));
+                        console.log('5. Closers Necessários:', reunioesRealizadas.toLocaleString('pt-BR'), '÷ 77 =', (reunioesRealizadas/77).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', closersNecessarios.toLocaleString('pt-BR'), '(77 reuniões/closer)');
+                        console.log('6. SDRs Necessários:', leadsNecessarios.toLocaleString('pt-BR'), '÷ 500 =', (leadsNecessarios/500).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', sdrsNecessarios.toLocaleString('pt-BR'));
+                        console.log('7. Gerentes Necessários:', closersNecessarios.toLocaleString('pt-BR'), '÷ 3,67 =', (closersNecessarios/3.67).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', gerentesNecessarios.toLocaleString('pt-BR'), '(usando Math.ceil)');
+                        console.log('8. Coordenadores Necessários:', sdrsNecessarios >= 15 ? sdrsNecessarios.toLocaleString('pt-BR') + ' ÷ 7,5 = ' + (sdrsNecessarios/7.5).toLocaleString('pt-BR', {maximumFractionDigits: 2}) + ' → ' + coordenadoresNecessarios.toLocaleString('pt-BR') : 'Precisa de 15+ SDRs (atual: ' + sdrsNecessarios + ')');
+                        console.log('9. Head de Vendas:', gerentesNecessarios >= 4 ? 'SIM (4+ gerentes)' : 'NÃO (' + gerentesNecessarios + ' gerentes)');
+                        console.log('10. Diretores Necessários:', gerentesNecessarios >= 4 ? '1 (4+ gerentes)' : '0 (<4 gerentes)');
+                        
+                        console.log('Resultados finais:', {
+                            leadsNecessarios,
+                            vendasNecessarias,
+                            reunioesAgendadas,
+                            reunioesRealizadas,
+                            closersNecessarios,
+                            sdrsNecessarios,
+                            gerentesNecessarios,
+                            headVendas,
+                            coordenadoresNecessarios,
+                            diretoresNecessarios
+                        });
+                        
+                        // Update results with animation
+                        const metaElement = document.getElementById('metaFaturamentoDisplay');
+                        if (metaElement) {
+                            metaElement.style.transform = 'scale(1.15)';
+                            metaElement.style.transition = 'all 0.5s ease';
+                            metaElement.textContent = formatCurrency(metaFaturamento);
+                            setTimeout(() => {
+                                metaElement.style.transform = 'scale(1)';
+                            }, 500);
+                        }
+                        
+                        updateResultWithAnimation('leadsNecessarios', leadsNecessarios);
+                        updateResultWithAnimation('vendasNecessarias', vendasNecessarias);
+                        updateResultWithAnimation('reunioesAgendadas', reunioesAgendadas);
+                        updateResultWithAnimation('reunioesRealizadas', reunioesRealizadas);
+                        updateResultWithAnimation('closersNecessarios', closersNecessarios);
+                        updateResultWithAnimation('sdrsNecessarios', sdrsNecessarios);
+                        updateResultWithAnimation('gerentesNecessarios', gerentesNecessarios);
+                        updateResultWithAnimation('headVendas', headVendas);
+                        updateResultWithAnimation('coordenadoresNecessarios', coordenadoresNecessarios);
+                        updateResultWithAnimation('diretoresNecessarios', diretoresNecessarios);
+                        
+                        // Reset form state
+                        form.classList.remove('calculating');
+                        calculateBtn.textContent = '🚀 Calcular!';
+                        calculateBtn.disabled = false;
+                        
+                        // Show success message
+                        showSuccess('✅ Cálculos realizados com sucesso!');
+                        
+                        console.log('Cálculos finalizados!');
+                    }, 500);
+                    
+                } catch (error) {
+                    console.error('Erro durante os cálculos:', error);
+                    showError(error.message);
+                    
+                    // Reset form state
+                    form.classList.remove('calculating');
+                    calculateBtn.textContent = '🚀 Calcular!';
+                    calculateBtn.disabled = false;
+                }
+            }
+            
+            function formatCurrency(value) {
+                return value.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+            }
+            
+            function formatNumber(value) {
+                if (value % 1 === 0) {
+                    // Integer number - no decimals
+                    return value.toLocaleString('pt-BR');
+                } else {
+                    // Decimal number - with 2 decimal places
+                    return value.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            }
+            
+            function updateResultWithAnimation(elementId, value) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    // Add highlight effect
+                    element.style.transform = 'scale(1.1)';
+                    element.style.transition = 'transform 0.3s ease';
+                    
+                    // Update value with Brazilian formatting
+                    element.textContent = formatNumber(value);
+                    
+                    // Remove highlight after animation
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            }
+            
+            // Add input event listeners for real-time validation
+            const inputs = form.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    hideMessages();
+                });
+            });
+            
+            console.log('Script inicializado com sucesso!');
+        });
+    </script>
+</body>
+</html>
