@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Métricas de Vendas e formação de equipe comercial</title>
+    <title>Calculadora de Métricas de Vendas</title>
     <style>
         * {
             cursor: none;
@@ -292,7 +292,7 @@
         <!-- Header -->
         <div class="header">
             <h1 class="gradient-text">
-                Calculadora de Métricas de Vendas e formação de equipe comercial
+                Calculadora de Métricas de Vendas
             </h1>
             <p style="color: white;">
                 Defina os números que você precisa para <span class="text-accent" style="font-weight: bold;">bater a meta de vendas da sua empresa!</span>
@@ -353,7 +353,7 @@
                                 👥 SDRs Atuais
                                 <span class="info-icon">ℹ️</span>
                                 <div class="tooltip-text">
-                                    Quantidade de SDRs (Sales Development Representatives) na sua equipe. Cada SDR consegue abordar ~500 leads por mês.
+                                    Quantidade de SDRs (Sales Development Representatives) na sua equipe. Cada SDR consegue abordar ~450 leads por mês.
                                 </div>
                             </label>
                             <input id="equipeSdr" 
@@ -500,11 +500,8 @@
         
         <!-- Footer -->
         <div style="text-align: center; margin-top: 32px; color: white; opacity: 0.75;">
-            <p>💻 Calculadora 100% desenvolvida pelo Everton Moreira Rodrigues</p>
+            <p>💻 Calculadora desenvolvida por <strong style="color: #d2bc8f;">Everton Moreira Rodrigues</strong></p>
             <p style="color: #d2bc8f; font-weight: bold;">Transformando dados em resultados! 📈</p>
-            <p style="font-size: 0.9rem; margin-top: 15px;">
-                </p>
-            </div>
         </div>
     </div>
     
@@ -660,21 +657,20 @@
                         // Closers: Baseado no print atual - 1.000 reuniões = 13 closers → ~77 reuniões por closer
                         const closersNecessarios = Math.ceil(reunioesRealizadas / 77);
                         
-                        // SDRs: Mantém 500 leads por SDR (estava correto)
-                        const sdrsNecessarios = Math.ceil(leadsNecessarios / 500);
+                        // SDRs: Ajustado para 450 leads por SDR
+                        const sdrsNecessarios = Math.ceil(leadsNecessarios / 450);
                         
-                        // ESTRUTURA HIERÁRQUICA (CORRIGIDA PARA DAR 3 GERENTES):
-                        // Print mostra: 11 closers = 3 gerentes
-                        // Solução: Math.ceil(11 ÷ 3.67) = Math.ceil(2.99) = 3 ✅
+                        // ESTRUTURA HIERÁRQUICA (NÚMEROS REDONDOS):
+                        // Usando números exatos para facilitar compreensão
                         
-                        // Gerentes: Usando Math.ceil para arredondar para cima
-                        const gerentesNecessarios = closersNecessarios >= 3 ? Math.ceil(closersNecessarios / 3.67) : 0;
+                        // Gerentes: 1 para cada 4 closers (arredondado de 3,67)
+                        const gerentesNecessarios = closersNecessarios >= 3 ? Math.ceil(closersNecessarios / 4) : 0;
                         
                         // Head de Vendas: 1 quando tiver 4+ gerentes
                         const headVendas = gerentesNecessarios >= 4 ? 1 : 0;
                         
-                        // Coordenadores: só a partir de 15 SDRs
-                        const coordenadoresNecessarios = sdrsNecessarios >= 15 ? Math.round(sdrsNecessarios / 7.5) : 0;
+                        // Coordenadores: 1 para cada 6 SDRs (arredondado de 6,5)
+                        const coordenadoresNecessarios = sdrsNecessarios >= 2 ? Math.round(sdrsNecessarios / 6) : 0;
                         
                         // Diretores: 1 quando tiver 4+ gerentes  
                         const diretoresNecessarios = gerentesNecessarios >= 4 ? 1 : 0;
@@ -685,9 +681,9 @@
                         console.log('3. Reuniões Agendadas:', reunioesRealizadas.toLocaleString('pt-BR'), '÷', taxaComparecimento.toLocaleString('pt-BR', {style: 'percent'}), '=', (reunioesRealizadas/taxaComparecimento).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', reunioesAgendadas.toLocaleString('pt-BR'));
                         console.log('4. Leads Necessários:', reunioesAgendadas.toLocaleString('pt-BR'), '×', leadsPorAgendamento.toLocaleString('pt-BR'), '=', leadsNecessarios.toLocaleString('pt-BR'));
                         console.log('5. Closers Necessários:', reunioesRealizadas.toLocaleString('pt-BR'), '÷ 77 =', (reunioesRealizadas/77).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', closersNecessarios.toLocaleString('pt-BR'), '(77 reuniões/closer)');
-                        console.log('6. SDRs Necessários:', leadsNecessarios.toLocaleString('pt-BR'), '÷ 500 =', (leadsNecessarios/500).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', sdrsNecessarios.toLocaleString('pt-BR'));
-                        console.log('7. Gerentes Necessários:', closersNecessarios.toLocaleString('pt-BR'), '÷ 3,67 =', (closersNecessarios/3.67).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', gerentesNecessarios.toLocaleString('pt-BR'), '(usando Math.ceil)');
-                        console.log('8. Coordenadores Necessários:', sdrsNecessarios >= 15 ? sdrsNecessarios.toLocaleString('pt-BR') + ' ÷ 7,5 = ' + (sdrsNecessarios/7.5).toLocaleString('pt-BR', {maximumFractionDigits: 2}) + ' → ' + coordenadoresNecessarios.toLocaleString('pt-BR') : 'Precisa de 15+ SDRs (atual: ' + sdrsNecessarios + ')');
+                        console.log('6. SDRs Necessários:', leadsNecessarios.toLocaleString('pt-BR'), '÷ 450 =', (leadsNecessarios/450).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', sdrsNecessarios.toLocaleString('pt-BR'), '(450 leads/SDR)');
+                        console.log('7. Gerentes Necessários:', closersNecessarios.toLocaleString('pt-BR'), '÷ 4 =', (closersNecessarios/4).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', gerentesNecessarios.toLocaleString('pt-BR'), '(4 closers/gerente)');
+                        console.log('8. Coordenadores Necessários:', sdrsNecessarios.toLocaleString('pt-BR'), '÷ 6 =', (sdrsNecessarios/6).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', coordenadoresNecessarios.toLocaleString('pt-BR'), '(6 SDRs/coordenador)');
                         console.log('9. Head de Vendas:', gerentesNecessarios >= 4 ? 'SIM (4+ gerentes)' : 'NÃO (' + gerentesNecessarios + ' gerentes)');
                         console.log('10. Diretores Necessários:', gerentesNecessarios >= 4 ? '1 (4+ gerentes)' : '0 (<4 gerentes)');
                         
