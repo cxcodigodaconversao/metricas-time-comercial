@@ -292,7 +292,7 @@
         <!-- Header -->
         <div class="header">
             <h1 class="gradient-text">
-                Calculadora de Métricas de Vendas
+                📊 Calculadora de Métricas de Vendas
             </h1>
             <p style="color: white;">
                 Defina os números que você precisa para <span class="text-accent" style="font-weight: bold;">bater a meta de vendas da sua empresa!</span>
@@ -323,10 +323,8 @@
                                 </div>
                             </label>
                             <input id="metaFaturamento" 
-                                   type="number" 
-                                   step="0.01"
-                                   min="1"
-                                   placeholder="Ex: 100000 (R$ 100.000,00)"
+                                   type="text" 
+                                   placeholder="Ex: 100.000,00"
                                    required>
                         </div>
                         
@@ -340,10 +338,8 @@
                                 </div>
                             </label>
                             <input id="ticketMedio" 
-                                   type="number" 
-                                   step="0.01"
-                                   min="1"
-                                   placeholder="Ex: 2500 (R$ 2.500,00)"
+                                   type="text" 
+                                   placeholder="Ex: 2.500,00"
                                    required>
                         </div>
                         
@@ -585,9 +581,9 @@
                     calculateBtn.textContent = '⏳ Calculando...';
                     calculateBtn.disabled = true;
                     
-                    // Get form values
-                    const metaFaturamento = parseFloat(document.getElementById('metaFaturamento').value) || 0;
-                    const ticketMedio = parseFloat(document.getElementById('ticketMedio').value) || 0;
+                    // Get form values - usar getNumericValue para campos monetários
+                    const metaFaturamento = getNumericValue(document.getElementById('metaFaturamento').value) || 0;
+                    const ticketMedio = getNumericValue(document.getElementById('ticketMedio').value) || 0;
                     const equipeSdr = parseInt(document.getElementById('equipeSdr').value) || 0;
                     const equipeCloser = parseInt(document.getElementById('equipeCloser').value) || 0;
                     const taxaConversao = parseFloat(document.getElementById('taxaConversao').value) || 0;
@@ -743,6 +739,64 @@
                     calculateBtn.disabled = false;
                 }
             }
+            
+            // Formatação em tempo real para campos monetários
+            function formatCurrencyInput(value) {
+                // Remove tudo que não é número
+                let numbers = value.replace(/\D/g, '');
+                
+                // Se vazio, retorna vazio
+                if (!numbers) return '';
+                
+                // Converte para número e divide por 100 para considerar centavos
+                let amount = parseInt(numbers) / 100;
+                
+                // Formata no padrão brasileiro
+                return amount.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            
+            function getNumericValue(formattedValue) {
+                // Remove formatação e retorna número puro
+                return parseFloat(formattedValue.replace(/\./g, '').replace(',', '.')) || 0;
+            }
+            
+            // Adiciona formatação aos campos monetários
+            const metaFaturamentoInput = document.getElementById('metaFaturamento');
+            const ticketMedioInput = document.getElementById('ticketMedio');
+            
+            function setupCurrencyInput(input) {
+                input.addEventListener('input', function(e) {
+                    let cursorPos = e.target.selectionStart;
+                    let oldValue = e.target.value;
+                    let newValue = formatCurrencyInput(oldValue);
+                    
+                    e.target.value = newValue;
+                    
+                    // Manter cursor na posição aproximada
+                    let newCursorPos = cursorPos + (newValue.length - oldValue.length);
+                    e.target.setSelectionRange(newCursorPos, newCursorPos);
+                });
+                
+                input.addEventListener('focus', function(e) {
+                    // Quando focar, se estiver vazio, não fazer nada
+                    // Se tiver valor, manter formatado
+                });
+                
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    let pastedData = e.clipboardData.getData('text');
+                    let numericValue = pastedData.replace(/\D/g, '');
+                    if (numericValue) {
+                        e.target.value = formatCurrencyInput(numericValue);
+                    }
+                });
+            }
+            
+            setupCurrencyInput(metaFaturamentoInput);
+            setupCurrencyInput(ticketMedioInput);
             
             function formatCurrency(value) {
                 return value.toLocaleString('pt-BR', {
