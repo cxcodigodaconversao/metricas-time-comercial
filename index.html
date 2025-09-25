@@ -292,7 +292,7 @@
         <!-- Header -->
         <div class="header">
             <h1 class="gradient-text">
-                Calculadora de Métricas de Vendas
+                📊 Calculadora de Métricas de Vendas
             </h1>
             <p style="color: white;">
                 Defina os números que você precisa para <span class="text-accent" style="font-weight: bold;">bater a meta de vendas da sua empresa!</span>
@@ -656,17 +656,16 @@
                         // SDRs: Ajustado para 450 leads por SDR
                         const sdrsNecessarios = Math.ceil(leadsNecessarios / 450);
                         
-                        // ESTRUTURA HIERÁRQUICA (NÚMEROS REDONDOS):
-                        // Usando números exatos para facilitar compreensão
+                        // ESTRUTURA HIERÁRQUICA (NOVA LÓGICA):
+                        // Coordenadores: 1 para cada 5 pessoas (closers + SDRs somados)
+                        const totalPessoas = closersNecessarios + sdrsNecessarios;
+                        const coordenadoresNecessarios = totalPessoas >= 5 ? Math.ceil(totalPessoas / 5) : 0;
                         
-                        // Gerentes: 1 para cada 4 closers (arredondado de 3,67)
-                        const gerentesNecessarios = closersNecessarios >= 3 ? Math.ceil(closersNecessarios / 4) : 0;
+                        // Gerentes: 1 para cada 2 coordenadores
+                        const gerentesNecessarios = coordenadoresNecessarios >= 2 ? Math.ceil(coordenadoresNecessarios / 2) : 0;
                         
                         // Head de Vendas: 1 quando tiver 4+ gerentes
                         const headVendas = gerentesNecessarios >= 4 ? 1 : 0;
-                        
-                        // Coordenadores: 1 para cada 6 SDRs (arredondado de 6,5)
-                        const coordenadoresNecessarios = sdrsNecessarios >= 2 ? Math.round(sdrsNecessarios / 6) : 0;
                         
                         // Diretores: 1 quando tiver 4+ gerentes  
                         const diretoresNecessarios = gerentesNecessarios >= 4 ? 1 : 0;
@@ -678,10 +677,11 @@
                         console.log('4. Leads Necessários:', reunioesAgendadas.toLocaleString('pt-BR'), '×', leadsPorAgendamento.toLocaleString('pt-BR'), '=', leadsNecessarios.toLocaleString('pt-BR'));
                         console.log('5. Closers Necessários:', reunioesRealizadas.toLocaleString('pt-BR'), '÷ 77 =', (reunioesRealizadas/77).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', closersNecessarios.toLocaleString('pt-BR'), '(77 reuniões/closer)');
                         console.log('6. SDRs Necessários:', leadsNecessarios.toLocaleString('pt-BR'), '÷ 450 =', (leadsNecessarios/450).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', sdrsNecessarios.toLocaleString('pt-BR'), '(450 leads/SDR)');
-                        console.log('7. Gerentes Necessários:', closersNecessarios.toLocaleString('pt-BR'), '÷ 4 =', (closersNecessarios/4).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', gerentesNecessarios.toLocaleString('pt-BR'), '(4 closers/gerente)');
-                        console.log('8. Coordenadores Necessários:', sdrsNecessarios.toLocaleString('pt-BR'), '÷ 6 =', (sdrsNecessarios/6).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', coordenadoresNecessarios.toLocaleString('pt-BR'), '(6 SDRs/coordenador)');
-                        console.log('9. Head de Vendas:', gerentesNecessarios >= 4 ? 'SIM (4+ gerentes)' : 'NÃO (' + gerentesNecessarios + ' gerentes)');
-                        console.log('10. Diretores Necessários:', gerentesNecessarios >= 4 ? '1 (4+ gerentes)' : '0 (<4 gerentes)');
+                        console.log('7. Total de Pessoas:', closersNecessarios.toLocaleString('pt-BR'), 'closers +', sdrsNecessarios.toLocaleString('pt-BR'), 'SDRs =', totalPessoas.toLocaleString('pt-BR'), 'pessoas');
+                        console.log('8. Coordenadores Necessários:', totalPessoas.toLocaleString('pt-BR'), '÷ 5 =', (totalPessoas/5).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', coordenadoresNecessarios.toLocaleString('pt-BR'), '(5 pessoas/coordenador)');
+                        console.log('9. Gerentes Necessários:', coordenadoresNecessarios.toLocaleString('pt-BR'), '÷ 2 =', (coordenadoresNecessarios/2).toLocaleString('pt-BR', {maximumFractionDigits: 2}), '→', gerentesNecessarios.toLocaleString('pt-BR'), '(2 coordenadores/gerente)');
+                        console.log('10. Head de Vendas:', gerentesNecessarios >= 4 ? 'SIM (4+ gerentes)' : 'NÃO (' + gerentesNecessarios + ' gerentes)');
+                        console.log('11. Diretores Necessários:', gerentesNecessarios >= 4 ? '1 (4+ gerentes)' : '0 (<4 gerentes)');
                         
                         console.log('Resultados finais:', {
                             leadsNecessarios,
